@@ -7,10 +7,10 @@ export interface Config {
     outputFolder: string;
     url: string;
   };
-
 }
 
 export function readConfig(): Config {
+
   return {
     watchFolder: process.env.WATCH_FOLDER || 'watch',
     encoreParams: {
@@ -18,7 +18,7 @@ export function readConfig(): Config {
       progressCallbackUri: process.env.ENCORE_CALLBACK_URL,
       inputFolder: process.env.ENCORE_INPUT_FOLDER,
       outputFolder: process.env.ENCORE_OUTPUT_FOLDER || 'out',
-      url: process.env.ENCORE_URL || 'http://localhost:8080',
+      url: process.env.ENCORE_URL || 'http://localhost:8080'
     }
   };
 }

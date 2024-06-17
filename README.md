@@ -1,41 +1,29 @@
-<h1 align="center">
-  Project Name or Logo
-</h1>
-
-<div align="center">
-  project name - quick salespitch why this is awesome. 
-  <br />
-  <br />
-  :book: <b><a href="https://eyevinn.github.io/{{repo-name}}/">Read the documentation (github pages)</a></b> :eyes:
-  <br />
-</div>
-
-<div align="center">
-<br />
-
-[![npm](https://img.shields.io/npm/v/@eyevinn/{{repo-name}}?style=flat-square)](https://www.npmjs.com/package/@eyevinn/{{repo-name}})
-[![github release](https://img.shields.io/github/v/release/Eyevinn/{{repo-name}}?style=flat-square)](https://github.com/Eyevinn/{{repo-name}}/releases)
-[![license](https://img.shields.io/github/license/eyevinn/{{repo-name}}.svg?style=flat-square)](LICENSE)
-
-[![PRs welcome](https://img.shields.io/badge/PRs-welcome-ff69b4.svg?style=flat-square)](https://github.com/eyevinn/{{repo-name}}/issues?q=is%3Aissue+is%3Aopen+label%3A%22help+wanted%22)
-[![made with hearth by Eyevinn](https://img.shields.io/badge/made%20with%20%E2%99%A5%20by-Eyevinn-59cbe8.svg?style=flat-square)](https://github.com/eyevinn)
-[![Slack](http://slack.streamingtech.se/badge.svg)](http://slack.streamingtech.se)
-
-</div>
-
-<!-- Add a description of the project here -->
+# Encore watchfolder
+Watches a folder for new files and triggers an encore job for each new file.
 
 ## Requirements
 
-<!--Add any external project dependencies such as node.js version etc here -->
+A running [encore](https://github.com/svt/encore) instance that jobs can be posted to.
 
 ## Installation / Usage
 
-<!--Add clear instructions on how to use the project here -->
+### Environment variables
 
-## Development
+| Variable | Description                                                                                                                                                        | Default value           |
+| --- |--------------------------------------------------------------------------------------------------------------------------------------------------------------------|-------------------------|
+| `ENCORE_URL` | URL to the encore instance                                                                                                                                         | `http://localhost:8080` |
+| `ENCORE_PROFILE` | Profile to use for started jobs                                                                                                                                    | 'program'               |
+| `ENCORE_CALLBACK_URL` | callback url to set in jobs                                                                                                                                        |                         |
+| `ENCORE_INPUT_FOLDER` | If the folder where files arrive is mounted under a different path in the encore container, set this to the path in the container corresponding to the watchfolder |                         |
+| `ENCORE_OUTPUT_FOLDER` | Base output folder                                                                                                                                                 | `out`                   |
+| `WATCH_FOLDER` | Folder to watch for new files                                                                                                                                      | `watchfolder`           |
+| `CHOKIDAR_USEPOLLING` | Use polling for file watching. May need to be set to true when running inside docker or with network filesystem.                                                   | `false`                 |
 
-<!--Add clear instructions on how to start development of the project here -->
+### Running
+Once environment has been configured as describe above, the service can be started with
+```bash
+npm run start
+```
 
 ## Contributing
 
