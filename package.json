@@ -1,6 +1,6 @@
 {
   "name": "@eyevinn/encore-watchfolder",
-  "version": "0.0.1",
+  "version": "0.0.2-alpha.0",
   "description": "The default typescript-nodejs template for eyevinn projects",
   "scripts": {
     "test": "jest",
