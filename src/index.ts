@@ -1,8 +1,11 @@
 import { watch } from 'chokidar';
-import { EncoreUploadModule, EncoreUploadModuleOptions } from '@eyevinn/iaf-plugin-encore-local';
+import {
+  EncoreUploadModule,
+  EncoreUploadModuleOptions
+} from '@eyevinn/iaf-plugin-encore-local';
 import { Logger } from 'eyevinn-iaf';
 import { readConfig } from './config';
-import path from 'node:path'
+import path from 'node:path';
 
 const logger: Logger = {
   verbose: (message: string) => console.log(`[VERBOSE] ${message}`),
@@ -22,8 +25,8 @@ const encoreUploader = new EncoreUploadModule({
   monitorJobs: false
 } as EncoreUploadModuleOptions);
 
-console.log(`Watching for new files in ${(config.watchFolder)}`);
-const watcher = watch([`${(config.watchFolder)}/**/*.mp4`], {
+logger.info(`Watching for new files in ${config.watchFolder}`);
+const watcher = watch([`${config.watchFolder}/${config.filePattern}`], {
   persistent: true,
   ignoreInitial: true
 });
@@ -32,6 +35,9 @@ watcher.on('add', (filePath) => {
   const encorePath = config.encoreParams.inputFolder
     ? filePath.replace(config.watchFolder, config.encoreParams.inputFolder)
     : path.resolve(filePath);
-  console.log(`Will transcode '${path}'(${encorePath})`);
-  encoreUploader.onFileAdd(encorePath, undefined as any);
+  logger.info(`Will transcode '${path}'(${encorePath})`);
+
+  encoreUploader.onFileAdd(encorePath, undefined as any).catch((err) => {
+    logger.error(`Error processing file ${path}: ${err}`);
+  });
 });
