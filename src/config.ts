@@ -1,6 +1,7 @@
 export interface Config {
   watchFolder: string;
   filePattern: string;
+  subtitleSuffix?: string;
   encoreParams: {
     profile: string;
     progressCallbackUri?: string;
@@ -14,6 +15,7 @@ export function readConfig(): Config {
   return {
     watchFolder: process.env.WATCH_FOLDER || 'watch',
     filePattern: process.env.FILE_PATTERN || '**/*.mp4',
+    subtitleSuffix: process.env.SUBTITLES_SUFFIX,
     encoreParams: {
       profile: process.env.ENCORE_PROFILE || 'program',
       progressCallbackUri: process.env.ENCORE_CALLBACK_URL,
