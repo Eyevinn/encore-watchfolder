@@ -11,7 +11,6 @@ export interface Config {
 }
 
 export function readConfig(): Config {
-
   return {
     watchFolder: process.env.WATCH_FOLDER || 'watch',
     filePattern: process.env.FILE_PATTERN || '**/*.mp4',

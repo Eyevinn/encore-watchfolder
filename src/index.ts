@@ -37,6 +37,7 @@ watcher.on('add', (filePath) => {
     : path.resolve(filePath);
   logger.info(`Will transcode '${path}'(${encorePath})`);
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   encoreUploader.onFileAdd(encorePath, undefined as any).catch((err) => {
     logger.error(`Error processing file ${path}: ${err}`);
   });

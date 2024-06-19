@@ -1,4 +1,5 @@
 # Encore watchfolder
+
 Watches a folder for new files and triggers an encore job for each new file.
 
 ## Requirements
@@ -9,19 +10,21 @@ A running [encore](https://github.com/svt/encore) instance that jobs can be post
 
 ### Environment variables
 
-| Variable | Description                                                                                                                                                        | Default value     |
-| --- |--------------------------------------------------------------------------------------------------------------------------------------------------------------------|-------------------|
-| `ENCORE_URL` | URL to the encore instance                                                                                                                                         | `http://localhost:8080` |
-| `ENCORE_PROFILE` | Profile to use for started jobs                                                                                                                                    | 'program'         |
-| `ENCORE_CALLBACK_URL` | callback url to set in jobs                                                                                                                                        |                   |
-| `ENCORE_INPUT_FOLDER` | If the folder where files arrive is mounted under a different path in the encore container, set this to the path in the container corresponding to the watchfolder |                   |
-| `ENCORE_OUTPUT_FOLDER` | Base output folder                                                                                                                                                 | `out`             |
-| `WATCH_FOLDER` | Folder to watch for new files                                                                                                                                      | `watch`           |
-| `FILE_PATTERN` | Glob pattern to match files to process.                                                                                                                            | `**/*.mp4`        |
-| `CHOKIDAR_USEPOLLING` | Use polling for file watching. May need to be set to true when running inside docker or with network filesystem.                                                   | `false`           |
+| Variable               | Description                                                                                                                                                        | Default value           |
+| ---------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ----------------------- |
+| `ENCORE_URL`           | URL to the encore instance                                                                                                                                         | `http://localhost:8080` |
+| `ENCORE_PROFILE`       | Profile to use for started jobs                                                                                                                                    | 'program'               |
+| `ENCORE_CALLBACK_URL`  | callback url to set in jobs                                                                                                                                        |                         |
+| `ENCORE_INPUT_FOLDER`  | If the folder where files arrive is mounted under a different path in the encore container, set this to the path in the container corresponding to the watchfolder |                         |
+| `ENCORE_OUTPUT_FOLDER` | Base output folder                                                                                                                                                 | `out`                   |
+| `WATCH_FOLDER`         | Folder to watch for new files                                                                                                                                      | `watch`                 |
+| `FILE_PATTERN`         | Glob pattern to match files to process.                                                                                                                            | `**/*.mp4`              |
+| `CHOKIDAR_USEPOLLING`  | Use polling for file watching. May need to be set to true when running inside docker or with network filesystem.                                                   | `false`                 |
 
 ### Running
+
 Once environment has been configured as describe above, the service can be started with
+
 ```bash
 npm run start
 ```
