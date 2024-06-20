@@ -48,7 +48,7 @@ watcher.on('add', (filePath) => {
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   encoreUploader.onFileAdd(encorePath, undefined as any).catch((err) => {
-    logger.error(`Error processing file ${path}: ${err}`);
+    logger.error(`Error processing file ${filePath}: ${err}`);
   });
 });
 
