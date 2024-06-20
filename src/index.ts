@@ -1,12 +1,11 @@
 import { watch } from 'chokidar';
-import {
-  EncoreUploadModule,
-  EncoreUploadModuleOptions
-} from '@eyevinn/iaf-plugin-encore-local';
+import { EncoreUploadModule } from '@eyevinn/iaf-plugin-encore-local';
 import { Logger } from 'eyevinn-iaf';
 import { readConfig } from './config';
 import path from 'node:path';
 import fs from 'node:fs';
+import { minimatch } from 'minimatch';
+import globParent from 'glob-parent';
 
 const logger: Logger = {
   verbose: (message: string) => console.log(`[VERBOSE] ${message}`),
@@ -17,39 +16,64 @@ const logger: Logger = {
 
 const config = readConfig();
 
-const encoreUploader = new EncoreUploadModule({
-  encoreEndpoint: config.encoreParams.url,
-  inputLocation: config.encoreParams.inputFolder,
-  outputDestination: config.encoreParams.outputFolder,
-  encodeParams: config.encoreParams,
-  logger,
-  monitorJobs: false,
-  jobCustomizer: (job) => {
-    const subtitles = getSubtitleFile(job.inputs[0].uri);
-    if (subtitles) {
-      logger.verbose(`found subtitles: ${subtitles}`);
-      job.inputs[0].videoFilters = [`subtitles=${subtitles}`];
-    }
-    return job;
+const jobCustomizer = (job) => {
+  const subtitles = getSubtitleFile(job.inputs[0].uri);
+  if (subtitles) {
+    logger.verbose(`found subtitles: ${subtitles}`);
+    job.inputs[0].videoFilters = [`subtitles=${subtitles}`];
   }
-} as EncoreUploadModuleOptions);
+  logger.verbose('Using profile: ' + job.profile);
+  return job;
+};
 
-logger.info(`Watching for new files in ${config.watchFolder}`);
-const watcher = watch([`${config.watchFolder}/${config.filePattern}`], {
-  persistent: true,
-  ignoreInitial: true
+const encoreUploaders: { pattern: string; uploader: EncoreUploadModule }[] = [];
+config.watchPatterns.forEach((wp) => {
+  encoreUploaders.push({
+    pattern: wp.pattern,
+    uploader: new EncoreUploadModule({
+      encoreEndpoint: config.encoreParams.url,
+      outputDestination: config.encoreParams.outputFolder,
+      encodeParams: {
+        ...config.encoreParams,
+        profile: wp.profile || config.encoreParams.profile
+      },
+      logger,
+      monitorJobs: false,
+      jobCustomizer
+    })
+  });
 });
 
-watcher.on('add', (filePath) => {
-  const encorePath = config.encoreParams.inputFolder
-    ? filePath.replace(config.watchFolder, config.encoreParams.inputFolder)
-    : path.resolve(filePath);
-  logger.info(`Will transcode '${filePath}'(${encorePath})`);
+logger.info(
+  `Watching for new files: ${config.watchPatterns
+    .map((wp) => wp.pattern)
+    .join(', ')}`
+);
+const watcher = watch(
+  config.watchPatterns.map((wp) => wp.pattern),
+  {
+    persistent: true,
+    ignoreInitial: true
+  }
+);
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  encoreUploader.onFileAdd(encorePath, undefined as any).catch((err) => {
-    logger.error(`Error processing file ${filePath}: ${err}`);
-  });
+watcher.on('add', (filePath) => {
+  const pattern = getPattern(filePath);
+  const watchFolder = globParent(pattern?.pattern || '.');
+  const encorePath = config.encoreParams.inputFolder
+    ? filePath.replace(watchFolder, config.encoreParams.inputFolder)
+    : path.resolve(filePath);
+
+  const encoreUploader = getUploader(filePath);
+  if (!encoreUploader) {
+    logger.error(`No uploader found for file ${filePath}`);
+  } else {
+    logger.info(`Will transcode '${filePath}'(${encorePath})}`);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    encoreUploader.onFileAdd(encorePath, undefined as any).catch((err) => {
+      logger.error(`Error processing file ${filePath}: ${err}`);
+    });
+  }
 });
 
 function getSubtitleFile(filePath: string) {
@@ -63,4 +87,15 @@ function getSubtitleFile(filePath: string) {
     return subtitlePath;
   }
   return undefined;
+}
+
+function getUploader(filePath: string) {
+  const uploader = encoreUploaders.find((uploader) =>
+    minimatch(filePath, uploader.pattern)
+  );
+  return uploader?.uploader;
+}
+
+function getPattern(filePath: string) {
+  return config.watchPatterns.find((wp) => minimatch(filePath, wp.pattern));
 }

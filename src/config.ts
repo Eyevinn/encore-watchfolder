@@ -1,6 +1,5 @@
 export interface Config {
-  watchFolder: string;
-  filePattern: string;
+  watchPatterns: WatchPattern[];
   subtitleSuffix?: string;
   encoreParams: {
     profile: string;
@@ -11,10 +10,22 @@ export interface Config {
   };
 }
 
+export interface WatchPattern {
+  pattern: string;
+  profile?: string;
+}
+
+function readWatchPatterns(): { pattern: string; profile?: string }[] {
+  const watchPatternsStr = process.env.WATCH_PATTERNS || 'watch/**/*.mp4';
+  return watchPatternsStr.split(',').map((watchPatternStr) => {
+    const [pattern, profile] = watchPatternStr.trim().split(':');
+    return { pattern, profile };
+  });
+}
+
 export function readConfig(): Config {
   return {
-    watchFolder: process.env.WATCH_FOLDER || 'watch',
-    filePattern: process.env.FILE_PATTERN || '**/*.mp4',
+    watchPatterns: readWatchPatterns(),
     subtitleSuffix: process.env.SUBTITLES_SUFFIX,
     encoreParams: {
       profile: process.env.ENCORE_PROFILE || 'program',
