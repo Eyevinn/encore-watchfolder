@@ -35,11 +35,18 @@ config.watchPatterns.forEach((wp) => {
       outputDestination: config.encoreParams.outputFolder,
       encodeParams: {
         ...config.encoreParams,
-        profile: wp.profile || config.encoreParams.profile
+        profile: wp.profile || config.encoreParams.profile,
+        password: undefined
       },
       logger,
       monitorJobs: false,
-      jobCustomizer
+      jobCustomizer,
+      encoreAuth: config.encoreParams.password
+        ? {
+            username: 'admin',
+            password: config.encoreParams.password
+          }
+        : undefined
     })
   });
 });
