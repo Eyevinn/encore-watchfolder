@@ -1,6 +1,7 @@
 export interface Config {
   watchPatterns: WatchPattern[];
   subtitleSuffix?: string;
+  jobCustomizerPluginPath?: string;
   encoreParams: {
     profile: string;
     progressCallbackUri?: string;
@@ -28,6 +29,7 @@ export function readConfig(): Config {
   return {
     watchPatterns: readWatchPatterns(),
     subtitleSuffix: process.env.SUBTITLES_SUFFIX,
+    jobCustomizerPluginPath: process.env.JOB_CUSTOMIZER_PLUGIN_PATH,
     encoreParams: {
       profile: process.env.ENCORE_PROFILE || 'program',
       progressCallbackUri: process.env.ENCORE_CALLBACK_URL,

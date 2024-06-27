@@ -6,6 +6,10 @@ import path from 'node:path';
 import fs from 'node:fs';
 import { minimatch } from 'minimatch';
 import globParent from 'glob-parent';
+import {
+  jobCustomizerPlugin,
+  loadJobCustomizerPlugin
+} from './jobCustomization';
 
 const logger: Logger = {
   verbose: (message: string) => console.log(`[VERBOSE] ${message}`),
@@ -15,6 +19,7 @@ const logger: Logger = {
 };
 
 const config = readConfig();
+loadJobCustomizerPlugin(config.jobCustomizerPluginPath);
 
 const jobCustomizer = (job) => {
   const subtitles = getSubtitleFile(job.inputs[0].uri);
@@ -22,7 +27,10 @@ const jobCustomizer = (job) => {
     logger.verbose(`found subtitles: ${subtitles}`);
     job.inputs[0].videoFilters = [`subtitles=${subtitles}`];
   }
-  logger.verbose('Using profile: ' + job.profile);
+  if (jobCustomizerPlugin) {
+    job = jobCustomizerPlugin.customizeJob(job);
+  }
+  logger.verbose('Finished customizing job: ' + JSON.stringify(job));
   return job;
 };
 
@@ -36,7 +44,8 @@ config.watchPatterns.forEach((wp) => {
       encodeParams: {
         ...config.encoreParams,
         profile: wp.profile || config.encoreParams.profile,
-        password: undefined
+        password: undefined,
+        url: undefined
       },
       logger,
       monitorJobs: false,
