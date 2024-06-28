@@ -34,7 +34,7 @@ export function readConfig(): Config {
       profile: process.env.ENCORE_PROFILE || 'program',
       progressCallbackUri: process.env.ENCORE_CALLBACK_URL,
       inputFolder: process.env.ENCORE_INPUT_FOLDER,
-      outputFolder: process.env.ENCORE_OUTPUT_FOLDER || 'out',
+      outputFolder: process.env.ENCORE_OUTPUT_FOLDER || '/tmp/encore-out',
       url: process.env.ENCORE_URL || 'http://localhost:8080',
       password: process.env.ENCORE_PASSWORD
     }
